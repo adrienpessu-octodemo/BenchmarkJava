@@ -58,7 +58,7 @@ jobs:
             --output="./scans/output_js.sarif" \
             --sarif-add-query-help \
             --sarif-add-snippets \
-            $PWD/scans/codeql/java_db \
+            $PWD/scans/codeql/javascript_db \
             codeql-queries/javascript/ql/src/Declarations/ArgumentsRedefined.ql
           
           # Upload SARIF file
