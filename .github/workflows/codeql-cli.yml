@@ -1,0 +1,58 @@
+name: "CodeQL CLI"
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: CodeQL script
+        run: |
+          
+          # Download CodeQL CLI
+          curl -L -o codeql.zip https://github.com/github/codeql-cli-binaries/releases/download/v2.12.6/codeql-linux64.zip
+          unzip codeql.zip -d codeql-cli
+          # Download CodeQL queries
+          git clone https://github.com/github/codeql.git codeql-queries --depth 1
+          # Create output directory
+          mkdir -p ./scans/codeql
+          # Create CodeQL database
+          echo $(ls -la)
+          echo $(pwd)
+          codeql-cli/codeql/codeql database create ./scans/codeql/java_db -s $PWD/src/main/java -l java --command "$PWD/mvnw -f $PWD/pom.xml clean compile -Dcheckstyle.skip " --overwrite
+          # Run CodeQL queries
+          codeql-cli/codeql/codeql database analyze \
+            --format="sarif-latest" \
+            -M 4096  -j 0 \
+            --sarif-category="codeql-scan:java" \
+            --output="./scans/output.sarif" \
+            --sarif-add-query-help \
+            --sarif-add-snippets \
+            $PWD/scans/codeql/java_db \
+            codeql-queries/java/ql/src/codeql-suites/java-security-experimental.qls
+          # Clean up
+          ./mvnw  clean
+          # Upload SARIF file
+          echo "Uploading SARIF file"
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          codeql-cli/codeql/codeql database upload-sarif ./scans/output.sarif --ref=$GITHUB_BASE_REF
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: output.sarif
+          path: ./scans/output.sarif
