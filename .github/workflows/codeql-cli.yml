@@ -50,7 +50,7 @@ jobs:
           # Upload SARIF file
           echo "Uploading SARIF file"
           echo GITHUB_BASE_REF: $GITHUB_BASE_REF
-          codeql-cli/codeql/codeql database upload-sarif ./scans/output.sarif --ref=$GITHUB_BASE_REF
+          codeql-cli/codeql/codeql github upload-results ./scans/output.sarif --ref=$GITHUB_BASE_REF
 
       - uses: actions/upload-artifact@v3
         with:
