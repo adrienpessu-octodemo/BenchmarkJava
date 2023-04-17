@@ -44,7 +44,7 @@ jobs:
             --sarif-add-query-help \
             --sarif-add-snippets \
             $PWD/scans/codeql/java_db \
-            codeql-queries/java/ql/src/Security/CWE/CWE-335/PredictableSeed.ql
+            codeql-queries/java/ql/src/codeql-suites/java-security-experimental.qls
           # Clean up
           ./mvnw  clean
           
@@ -59,7 +59,7 @@ jobs:
             --sarif-add-query-help \
             --sarif-add-snippets \
             $PWD/scans/codeql/javascript_db \
-            codeql-queries/javascript/ql/src/Declarations/ArgumentsRedefined.ql
+            codeql-queries/javascript/ql/src/codeql-suites/javascript-security-experimental.qls
           
           # Upload SARIF file
           codeql-cli/codeql/codeql github upload-results --sarif=./scans/output.sarif --ref=$GITHUB_REF --github-auth-stdin="${{ secrets.GITHUB_TOKEN }}"
