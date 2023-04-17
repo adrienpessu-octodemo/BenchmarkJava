@@ -62,6 +62,7 @@ jobs:
             codeql-queries/javascript/ql/src/Declarations/ArgumentsRedefined.ql
           
           # Upload SARIF file
+          export GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           codeql-cli/codeql/codeql github upload-results --sarif=./scans/output.sarif --ref=$GITHUB_BASE_REF
           codeql-cli/codeql/codeql github upload-results --sarif=./scans/output_js.sarif --ref=$GITHUB_BASE_REF
 
