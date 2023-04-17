@@ -7,8 +7,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on:
-      group: larger
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
@@ -39,7 +38,7 @@ jobs:
           # Run CodeQL queries
           codeql-cli/codeql/codeql database analyze \
             --format="sarif-latest" \
-            -M 0  -j 0 \
+            -M 4096  -j 0 \
             --sarif-category="codeql-scan:java" \
             --output="./scans/output.sarif" \
             --sarif-add-query-help \
@@ -54,7 +53,7 @@ jobs:
           # Run CodeQL queries
           codeql-cli/codeql/codeql database analyze \
             --format="sarif-latest" \
-            -M 0  -j 0 \
+            -M 4096  -j 0 \
             --sarif-category="codeql-scan:javascript" \
             --output="./scans/output_js.sarif" \
             --sarif-add-query-help \
