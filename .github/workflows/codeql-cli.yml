@@ -34,7 +34,7 @@ jobs:
           # Create CodeQL database
           echo $(ls -la)
           echo $(pwd)
-          codeql-cli/codeql/codeql database create ./scans/codeql/java_db -s $PWD/src/main/java -l java --command "$PWD/mvnw -f $PWD/pom.xml -DskipTests=true -Dspotless.check.skip=true install " --overwrite
+          codeql-cli/codeql/codeql database create ./scans/codeql/java_db -s $PWD/src/main/java -l java --command "$PWD/mvnw -f $PWD/pom.xml -DskipTests=true -Dspotless.apply.skip=true compile " --overwrite
           # Run CodeQL queries
           codeql-cli/codeql/codeql database analyze \
             --format="sarif-latest" \
