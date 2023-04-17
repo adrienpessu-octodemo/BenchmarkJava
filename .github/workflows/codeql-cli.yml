@@ -62,8 +62,8 @@ jobs:
             codeql-queries/javascript/ql/src/Declarations/ArgumentsRedefined.ql
           
           # Upload SARIF file
-          codeql-cli/codeql/codeql github upload-results --sarif=./scans/output.sarif --ref=$GITHUB_BASE_REF --github-auth-stdin="${{ secrets.GITHUB_TOKEN }}"
-          codeql-cli/codeql/codeql github upload-results --sarif=./scans/output_js.sarif --ref=$GITHUB_BASE_REF --github-auth-stdin="${{ secrets.GITHUB_TOKEN }}"
+          codeql-cli/codeql/codeql github upload-results --sarif=./scans/output.sarif --ref=$GITHUB_REF --github-auth-stdin="${{ secrets.GITHUB_TOKEN }}"
+          codeql-cli/codeql/codeql github upload-results --sarif=./scans/output_js.sarif --ref=$GITHUB_REF --github-auth-stdin="${{ secrets.GITHUB_TOKEN }}"
 
       - uses: actions/upload-artifact@v3
         with:
