@@ -31,7 +31,7 @@ jobs:
           git clone https://github.com/github/codeql.git codeql-queries --depth 1
           # Create output directory
           mkdir -p ./scans/codeql
-          # Create CodeQL database
+          # Create CodeQL database for Java
           echo $(ls -la)
           echo $(pwd)
           codeql-cli/codeql/codeql database create ./scans/codeql/java_db -s $PWD/src/main/java -l java --command "$PWD/mvnw -f $PWD/pom.xml -DskipTests=true -Dspotless.apply.skip=true compile " --overwrite
@@ -44,13 +44,26 @@ jobs:
             --sarif-add-query-help \
             --sarif-add-snippets \
             $PWD/scans/codeql/java_db \
-            codeql-queries/java/ql/src/codeql-suites/java-security-experimental.qls
+            codeql-queries/java/ql/src/codeql-suites/java-code-scanning.qls
           # Clean up
           ./mvnw  clean
+          
+          # Create CodeQL database for JavaScript
+          codeql-cli/codeql/codeql database create ./scans/codeql/javascript_db -s $PWD/src/main/webapp -l javascript --overwrite
+          # Run CodeQL queries
+          codeql-cli/codeql/codeql database analyze \
+            --format="sarif-latest" \
+            -M 4096  -j 0 \
+            --sarif-category="codeql-scan:javascript" \
+            --output="./scans/output_js.sarif" \
+            --sarif-add-query-help \
+            --sarif-add-snippets \
+            $PWD/scans/codeql/java_db \
+            codeql-queries/javascript/ql/src/codeql-suites/javascript-code-scanning.qls
+          
           # Upload SARIF file
-          echo "Uploading SARIF file"
-          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
           codeql-cli/codeql/codeql github upload-results --sarif=./scans/output.sarif --ref=$GITHUB_BASE_REF
+          codeql-cli/codeql/codeql github upload-results --sarif=./scans/output_js.sarif --ref=$GITHUB_BASE_REF
 
       - uses: actions/upload-artifact@v3
         with:
