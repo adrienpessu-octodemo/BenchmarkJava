@@ -7,7 +7,8 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on:
+      group: larger
     permissions:
       actions: read
       contents: read
