@@ -13,6 +13,11 @@ $(document).ready(function() {
     }
 });
 
+$("button").click(function () {
+    var target = $(this).attr("data-target");
+    $(target).hide();
+});
+
 function dispatchToSubmit(event) {
     const id = event.target.id;
     const button = document.getElementById(id);
