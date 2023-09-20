@@ -251,3 +251,6 @@ function getJsonMsgValues(jsonResponse) {
     
     return result;
 }
+
+
+const dummyStorageAccKey = "DefaultEndpointsProtocol=https:AccountName=dummy0001;AccountKey=L+tpn/+qfQJcmZavW+r/Dx9JbwnMcXhxS+I5gt1YiyLue+vsMfrbCzX7GznGnFmfddPlPo8qwKVc+ASZ1Q==;EndpointSuffix=core.windows.net";
