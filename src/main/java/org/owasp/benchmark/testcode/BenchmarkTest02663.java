@@ -50,12 +50,17 @@ public class BenchmarkTest02663 extends HttpServlet {
             java.util.Properties benchmarkprops = new java.util.Properties();
             benchmarkprops.load(
                     this.getClass().getClassLoader().getResourceAsStream("benchmark.properties"));
-            String algorithm = benchmarkprops.getProperty("cryptoAlg1", "DESede/ECB/PKCS5Padding");
+            String algorithm = benchmarkprops.getProperty("cryptoAlg1", "AES/CBC/PKCS5Padding");
             javax.crypto.Cipher c = javax.crypto.Cipher.getInstance(algorithm);
 
             // Prepare the cipher to encrypt
-            javax.crypto.SecretKey key = javax.crypto.KeyGenerator.getInstance("DES").generateKey();
-            c.init(javax.crypto.Cipher.ENCRYPT_MODE, key);
+            javax.crypto.KeyGenerator keyGen = javax.crypto.KeyGenerator.getInstance("AES");
+            keyGen.init(128); // Use AES-128
+            javax.crypto.SecretKey key = keyGen.generateKey();
+
+            // Generate an initialization vector (IV) for CBC mode
+            javax.crypto.spec.IvParameterSpec iv = new javax.crypto.spec.IvParameterSpec(new byte[16]);
+            c.init(javax.crypto.Cipher.ENCRYPT_MODE, key, iv);
 
             // encrypt and store the results
             byte[] input = {(byte) '?'};
