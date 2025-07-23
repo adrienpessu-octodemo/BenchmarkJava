@@ -44,6 +44,10 @@ public class BenchmarkTest02381 extends HttpServlet {
                 new org.owasp.benchmark.helpers.SeparateClassRequest(request);
         String param = scr.getTheParameter("BenchmarkTest02381");
         if (param == null) param = "";
+        // Validate the parameter to prevent path traversal
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid parameter value");
+        }
 
         String bar = doSomething(request, param);
 
