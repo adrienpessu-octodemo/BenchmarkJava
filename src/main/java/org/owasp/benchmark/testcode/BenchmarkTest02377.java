@@ -45,6 +45,11 @@ public class BenchmarkTest02377 extends HttpServlet {
         String param = scr.getTheParameter("BenchmarkTest02377");
         if (param == null) param = "";
 
+        // Validate the user input
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
+        }
+
         String bar = doSomething(request, param);
 
         java.io.File fileTarget = new java.io.File(bar, "/Test.txt");
