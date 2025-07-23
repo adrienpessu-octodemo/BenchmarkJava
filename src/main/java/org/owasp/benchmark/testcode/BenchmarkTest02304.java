@@ -59,6 +59,11 @@ public class BenchmarkTest02304 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
+        // Validate the bar variable to prevent path traversal
+        if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file path");
+        }
+
         String fileName = null;
         java.io.FileInputStream fis = null;
 

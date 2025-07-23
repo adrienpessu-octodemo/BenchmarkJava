@@ -67,9 +67,21 @@ public class BenchmarkTest02555 extends HttpServlet {
         }
         param = java.net.URLDecoder.decode(param, "UTF-8");
 
+        // Validate the param to ensure it does not contain "..", "/", or "\\"
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file path");
+        }
+
         String bar = doSomething(request, param);
 
-        java.io.File fileTarget = new java.io.File(bar);
+        // Restrict the file path to a specific directory
+        java.io.File safeDir = new java.io.File("/safe/directory");
+        java.io.File fileTarget = new java.io.File(safeDir, bar).getCanonicalFile();
+
+        // Ensure the file is within the safe directory
+        if (!fileTarget.getPath().startsWith(safeDir.getCanonicalPath())) {
+            throw new IllegalArgumentException("Invalid file path");
+        }
         response.getWriter()
                 .println(
                         "Access to file: '"

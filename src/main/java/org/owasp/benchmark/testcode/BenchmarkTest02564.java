@@ -69,11 +69,24 @@ public class BenchmarkTest02564 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
+        // Validate the user-provided data
+        if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
+        }
+
         String fileName = null;
         java.io.FileOutputStream fos = null;
 
         try {
-            fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + bar;
+            java.nio.file.Path safeDir = java.nio.file.Paths.get(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR).normalize().toAbsolutePath();
+            java.nio.file.Path filePath = safeDir.resolve(bar).normalize().toAbsolutePath();
+
+            // Ensure the path stays within the safe directory
+            if (!filePath.startsWith(safeDir)) {
+                throw new IllegalArgumentException("Invalid filename");
+            }
+
+            fileName = filePath.toString();
 
             fos = new java.io.FileOutputStream(new java.io.File(fileName), false);
             response.getWriter()

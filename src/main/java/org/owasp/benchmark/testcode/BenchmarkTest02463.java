@@ -47,6 +47,11 @@ public class BenchmarkTest02463 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
+        // Validate the user input to prevent path traversal
+        if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+
         java.io.File fileTarget =
                 new java.io.File(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR, bar);
         response.getWriter()

@@ -45,6 +45,11 @@ public class BenchmarkTest02379 extends HttpServlet {
         String param = scr.getTheParameter("BenchmarkTest02379");
         if (param == null) param = "";
 
+        // Validate the user-provided input to prevent path traversal
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid input");
+        }
+
         String bar = doSomething(request, param);
 
         // FILE URIs are tricky because they are different between Mac and Windows because of lack

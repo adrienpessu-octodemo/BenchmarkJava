@@ -67,6 +67,11 @@ public class BenchmarkTest02569 extends HttpServlet {
         }
         param = java.net.URLDecoder.decode(param, "UTF-8");
 
+        // Validate the param value to prevent path traversal
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+
         String bar = doSomething(request, param);
 
         String fileName = null;

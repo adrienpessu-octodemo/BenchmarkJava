@@ -51,6 +51,9 @@ public class BenchmarkTest02383 extends HttpServlet {
         java.io.FileOutputStream fos = null;
 
         try {
+            if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+                throw new IllegalArgumentException("Invalid file name");
+            }
             fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + bar;
 
             fos = new java.io.FileOutputStream(fileName);

@@ -69,26 +69,29 @@ public class BenchmarkTest02565 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
-        String fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + bar;
+        // Validate the user input to ensure it does not contain any path separators or ".." sequences
+        if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+
+        // Ensure the resolved path is within a specific safe directory
+        java.nio.file.Path safeDir = java.nio.file.Paths.get(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR).normalize().toAbsolutePath();
+        java.nio.file.Path filePath = safeDir.resolve(bar).normalize().toAbsolutePath();
+
+        if (!filePath.startsWith(safeDir)) {
+            throw new IllegalArgumentException("Invalid file path");
+        }
 
         try (
-        // Create the file first so the test won't throw an exception if it doesn't exist.
-        // Note: Don't actually do this because this method signature could cause a tool to find
-        // THIS file constructor
-        // as a vuln, rather than the File signature we are trying to actually test.
-        // If necessary, just run the benchmark twice. The 1st run should create all the necessary
-        // files.
-        // new java.io.File(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + bar).createNewFile();
-
         java.io.FileOutputStream fos =
-                new java.io.FileOutputStream(new java.io.FileInputStream(fileName).getFD()); ) {
+                new java.io.FileOutputStream(new java.io.FileInputStream(filePath.toString()).getFD()); ) {
             response.getWriter()
                     .println(
                             "Now ready to write to file: "
-                                    + org.owasp.esapi.ESAPI.encoder().encodeForHTML(fileName));
+                                    + org.owasp.esapi.ESAPI.encoder().encodeForHTML(filePath.toString()));
 
         } catch (Exception e) {
-            System.out.println("Couldn't open FileOutputStream on file: '" + fileName + "'");
+            System.out.println("Couldn't open FileOutputStream on file: '" + filePath.toString() + "'");
         }
     } // end doPost
 
