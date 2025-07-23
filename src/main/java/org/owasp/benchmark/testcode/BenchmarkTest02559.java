@@ -67,6 +67,11 @@ public class BenchmarkTest02559 extends HttpServlet {
         }
         param = java.net.URLDecoder.decode(param, "UTF-8");
 
+        // Validate the param to prevent path traversal
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid parameter value");
+        }
+
         String bar = doSomething(request, param);
 
         // FILE URIs are tricky because they are different between Mac and Windows because of lack
