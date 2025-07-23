@@ -45,6 +45,11 @@ public class BenchmarkTest02378 extends HttpServlet {
         String param = scr.getTheParameter("BenchmarkTest02378");
         if (param == null) param = "";
 
+        // Validate the user input
+        if (param.contains("..") || param.contains("/") || param.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+
         String bar = doSomething(request, param);
 
         // FILE URIs are tricky because they are different between Mac and Windows because of lack
@@ -56,15 +61,15 @@ public class BenchmarkTest02378 extends HttpServlet {
             else startURIslashes = "//";
 
         try {
-            java.net.URI fileURI =
-                    new java.net.URI(
-                            "file:"
-                                    + startURIslashes
-                                    + org.owasp.benchmark.helpers.Utils.TESTFILES_DIR
-                                            .replace('\\', '/')
-                                            .replace(' ', '_')
-                                    + bar);
-            java.io.File fileTarget = new java.io.File(fileURI);
+            java.nio.file.Path baseDir = java.nio.file.Paths.get(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR).normalize().toAbsolutePath();
+            java.nio.file.Path filePath = baseDir.resolve(bar).normalize().toAbsolutePath();
+
+            // Ensure the file path is within the base directory
+            if (!filePath.startsWith(baseDir)) {
+                throw new IllegalArgumentException("Invalid file path");
+            }
+
+            java.io.File fileTarget = new java.io.File(filePath.toString());
             response.getWriter()
                     .println(
                             "Access to file: '"
@@ -79,7 +84,7 @@ public class BenchmarkTest02378 extends HttpServlet {
             } else {
                 response.getWriter().println(" But file doesn't exist yet.");
             }
-        } catch (java.net.URISyntaxException e) {
+        } catch (Exception e) {
             throw new ServletException(e);
         }
     } // end doPost

@@ -69,11 +69,23 @@ public class BenchmarkTest02570 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
+        // Validate the bar value to prevent path traversal attacks
+        if (bar.contains("..") || bar.contains("/") || bar.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+
         String fileName = org.owasp.benchmark.helpers.Utils.TESTFILES_DIR + bar;
         java.io.InputStream is = null;
 
         try {
-            java.nio.file.Path path = java.nio.file.Paths.get(fileName);
+            java.nio.file.Path path = java.nio.file.Paths.get(fileName).normalize().toAbsolutePath();
+            java.nio.file.Path basePath = java.nio.file.Paths.get(org.owasp.benchmark.helpers.Utils.TESTFILES_DIR).normalize().toAbsolutePath();
+
+            // Ensure the path stays within the base directory
+            if (!path.startsWith(basePath)) {
+                throw new IllegalArgumentException("Invalid file path");
+            }
+
             is = java.nio.file.Files.newInputStream(path, java.nio.file.StandardOpenOption.READ);
             byte[] b = new byte[1000];
             int size = is.read(b);
